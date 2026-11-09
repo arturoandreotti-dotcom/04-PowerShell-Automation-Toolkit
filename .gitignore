@@ -1,0 +1,13 @@
+# PowerShell logs
+*.log
+
+# Generated reports
+reports/
+*.csv
+
+# Temporary files
+*.tmp
+*.bak
+
+# VS Code local settings
+.vscode/
