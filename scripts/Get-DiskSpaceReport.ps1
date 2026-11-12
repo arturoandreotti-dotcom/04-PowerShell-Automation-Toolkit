@@ -27,42 +27,45 @@ param(
 )
 
 Get-CimInstance Win32_LogicalDisk |
-    Where-Object DriveType -eq 3 |
-    ForEach-Object {
-        if ($null -eq $_.Size -or $_.Size -le 0) {
-            Write-Error "Invalid disk size detected on drive $($_.DeviceID)"
-        }
+Where-Object DriveType -eq 3 |
+ForEach-Object {
+    if ($null -eq $_.Size -or $_.Size -le 0) {
+        Write-Error "Invalid disk size detected on drive $($_.DeviceID)"
+    }
 
-        $_
-    } |
-    Select-Object DeviceID, @{
-        Name = "SizeGiB"
-        Expression = {
-            [math]::Round($_.Size / 1GB, 2)
+    $_
+} |
+Select-Object DeviceID, @{
+    Name       = "SizeGiB"
+    Expression = {
+        [math]::Round($_.Size / 1GB, 2)
+    }
+}, @{
+    Name       = "FreeSpaceGiB"
+    Expression = {
+        [math]::Round($_.FreeSpace / 1GB, 2)
+    }
+}, @{
+    Name       = "UsedPercent"
+    Expression = {
+        if ($null -eq $_.Size -or $_.Size -le 0) {
+            $null
         }
-    }, @{
-        Name = "FreeSpaceGiB"
-        Expression = {
-            [math]::Round($_.FreeSpace / 1GB, 2)
-        }
-    }, @{
-        Name = "UsedPercent"
-        Expression = {
-            if ($null -eq $_.Size -or $_.Size -le 0) {
-                $null
-            } else {
-                [math]::Round((($_.Size - $_.FreeSpace) / $_.Size) * 100, 2)
-            }
-        }
-    }, @{
-        Name = "Status"
-        Expression = {
-            if ($null -eq $_.Size -or $_.Size -le 0) {
-                "UNKNOWN"
-            } elseif (((($_.Size - $_.FreeSpace) / $_.Size) * 100) -ge $WarningThreshold) {
-                "WARNING"
-            } else {
-                "OK"
-            }
+        else {
+            [math]::Round((($_.Size - $_.FreeSpace) / $_.Size) * 100, 2)
         }
     }
+}, @{
+    Name       = "Status"
+    Expression = {
+        if ($null -eq $_.Size -or $_.Size -le 0) {
+            "UNKNOWN"
+        }
+        elseif (((($_.Size - $_.FreeSpace) / $_.Size) * 100) -ge $WarningThreshold) {
+            "WARNING"
+        }
+        else {
+            "OK"
+        }
+    }
+}
