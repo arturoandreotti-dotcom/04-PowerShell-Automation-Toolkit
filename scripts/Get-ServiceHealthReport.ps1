@@ -47,10 +47,8 @@ param(
 
 function Get-ServiceHealth {
     param(
-        # Parameter can select a specific service
         [String[]]$ServiceName
     )
-
 
     if ($ServiceName.Count -eq 0) {
         $Services = Get-Service
@@ -91,10 +89,10 @@ if ( $ShowSummary -eq $true ) {
 }
 
 if ( $ExportCsv ) {
-    $ReportsPath = Join-Path $PSScriptRoot "..\reports"
-    $CsvPath = Join-Path $ReportsPath "ServiceHealth.csv"
-    if ( (Test-Path $ReportsPath) -eq $false) {
-        New-Item -ItemType Directory -Path $ReportsPath | Out-Null
+    $ReportsDirectory = Join-Path $PSScriptRoot "..\reports"
+    $ReportFilePath = Join-Path $ReportsDirectory "ServiceHealth.csv"
+    if ( (Test-Path $ReportsDirectory) -eq $false) {
+        New-Item -ItemType Directory -Path $ReportsDirectory | Out-Null
     }
-    $Report | Export-Csv -Path $CsvPath -NoTypeInformation
+    $Report | Export-Csv -Path $ReportFilePath
 }
