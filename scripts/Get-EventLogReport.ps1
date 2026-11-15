@@ -55,5 +55,5 @@ if ($ExportCsv) {
     }
     $ReportFilePath = Join-Path $ReportsDirectory "EventLog.csv"
     
-    $Report | Export-Csv -Path $ReportFilePath -NoTypeInformation
+    $Report | Export-Csv -Path $ReportFilePath
 }
